@@ -6,35 +6,36 @@
 - Create requirements.txt with initial dependencies
   - pydantic
   - pydantic-ai
-  - mem0 (https://github.com/mem0ai/mem0)
-  - chromadb (for vector storage)
+  - mem0ai (https://github.com/mem0ai/mem0)
   - requests (for web search)
+  - llama-api-client (https://github.com/meta-llama/llama-api-python)
   - typing and other utility libraries
 - Setup basic README and documentation
+- Reference PydanticAI example repository
 
 ## Step 2: Core Agent Framework
-- Implement base Agent class using PydanticAI
+- Implement base Agent class using PydanticAI based on example repository
 - Define common agent behaviors and attributes
 - Create agent initialization with system prompts
-- Setup basic LLM integration (OpenAI/Anthropic)
-- Implement a simple agent run loop
+- Setup Llama integration using official Llama API client
+- Implement a simple agent run loop and test file to confirm
 
 ## Step 3: Memory System (mem0)
-- Design and implement persistent memory architecture
-- Create vector database integration for semantic search
-- Implement memory writing and retrieval functions
+- Integrate mem0 directly using the mem0ai package
+- Setup memory initialization with appropriate configurations
+- Implement memory writing and retrieval functions using mem0 API
 - Design memory schema for different types of content:
   - Web search results
   - Conversation logs
   - Meeting transcripts
   - Task outputs
-- Implement memory utility functions (search, summarize, etc.)
+- Implement memory utility functions (search, summarize, etc.) using mem0's capabilities
 
 ## Step 4: Web Search Tool
 - Implement web_search tool using search API (Google/Bing)
 - Create web content extraction and processing
 - Design caching mechanism for search results
-- Implement automatic memory storage of search results
+- Implement automatic memory storage of search results in mem0
 - Add error handling and rate limiting
 
 ## Step 5: Agent Communication Infrastructure
@@ -47,7 +48,7 @@
 ## Step 6: Team Meeting Protocol
 - Implement meeting orchestration functionality
 - Create structured turn-taking mechanism
-- Design meeting transcript logging
+- Design meeting transcript logging to mem0
 - Implement meeting initiation and conclusion functions
 - Create CEO moderation controls for meetings
 
@@ -59,8 +60,8 @@
 - Create reputation-based pairing optimization
 
 ## Step 8: CEO Agent Implementation
-- Create specialized CEO agent class
-- Implement task decomposition functionality
+- Create specialized CEO agent class extending PydanticAI base
+- Implement task decomposition functionality using Llama API
 - Design task assignment system
 - Create progress tracking and monitoring functions
 - Implement meeting scheduling logic
@@ -69,7 +70,7 @@
 - Implement Researcher agent with search specialization
 - Create Analyst agent with reasoning focus
 - Design Synthesizer agent with output generation capabilities
-- Add specialized system prompts for each role
+- Add specialized system prompts for each role optimized for Llama models
 - Implement role-specific behavior functions
 
 ## Step 10: Task Management System
@@ -83,12 +84,12 @@
 - Implement main application interface
 - Create user input handling
 - Design output presentation
-- Implement session management
-- Create persistence across restarts
+- Implement session management with mem0
+- Create persistence across restarts using mem0's storage capabilities
 
 ## Step 12: Workflow Orchestration
 - Implement the full CEO-led workflow
-- Create problem decomposition logic
+- Create problem decomposition logic using Llama's reasoning capabilities
 - Design parallel execution coordination
 - Implement results collection and integration
 - Create solution finalization process
@@ -96,34 +97,6 @@
 ## Step 13: Testing Framework
 - Design test scenarios for agent behaviors
 - Create integration tests for team collaboration
-- Implement memory persistence tests
+- Implement memory persistence tests with mem0
 - Design reputation system validation
 - Create end-to-end workflow tests
-
-## Step 14: Debugging and Monitoring
-- Implement logging system for agent activities
-- Create visualization of agent interactions
-- Design debugging tools for memory inspection
-- Implement reputation tracking dashboard
-- Create workflow monitoring tools
-
-## Step 15: Performance Optimization
-- Profile and optimize memory usage
-- Implement efficient context retrieval
-- Design token usage optimization
-- Create batching for LLM calls where possible
-- Implement caching strategies
-
-## Step 16: Deployment Preparation
-- Containerize the application with Docker
-- Create configuration management
-- Implement security measures
-- Design scaling strategy
-- Create documentation for deployment
-
-## Step 17: User Interface (Optional)
-- Implement basic web interface
-- Create visualization of agent activities
-- Design task submission interface
-- Implement results presentation
-- Create agent interaction monitoring 
