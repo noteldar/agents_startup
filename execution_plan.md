@@ -11,12 +11,12 @@
 - Setup basic README and documentation ✅
 - Reference PydanticAI example repository (/Users/eldar/altbridge/agents_factory_pydanticai) ✅
 
-## Step 2: Core Agent Framework
-- Implement base Agent class using PydanticAI based on example repository
-- Define common agent behaviors and attributes
-- Create agent initialization with system prompts
-- Setup Llama integration using official Llama API client
-- Implement a simple agent run loop and test file to confirm
+## Step 2: Core Agent Framework ✅
+- Implement base Agent class using CrewAI based on example repository ✅
+- Define common agent behaviors and attributes ✅
+- Create agent initialization with system prompts ✅
+- Setup Llama integration using official Llama API client ✅
+- Implement a simple agent run loop and test file to confirm ✅
 
 ## Step 3: Memory System (mem0)
 - Integrate mem0 directly using the mem0ai package
