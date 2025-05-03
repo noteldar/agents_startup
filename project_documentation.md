@@ -49,7 +49,28 @@ python main.py
 - Analyst Agent: Focuses on critical thinking and analysis of information
 - Synthesizer Agent: Compiles and presents knowledge in a clear format
 
+## Memory System
+The system uses [Mem0](https://mem0.ai) for persistent memory storage and retrieval:
+
+### Memory Types
+- **Agent Memory**: Each agent has its own long-term memory stored with `agent_id`
+- **User Memory**: Information about users stored with `user_id`
+- **Session Memory**: Short-term memory for a specific interaction session using `run_id`
+
+### Memory Features
+- **Semantic Search**: Retrieve relevant memories based on meaning, not just keywords
+- **Categorized Storage**: Tag memories with categories for better organization
+- **Metadata Support**: Attach structured metadata to memories for advanced filtering
+- **Memory History**: Track changes to memories over time
+
+### Testing the Memory System
+You can test the memory system functionality with:
+```bash
+python -m memory.test_memory
+```
+
 ## References
 - PydanticAI documentation: https://ai.pydantic.dev/
 - mem0 repository: https://github.com/mem0ai/mem0
 - Llama API: https://github.com/meta-llama/llama-api-python 
+- Mem0 Documentation: https://docs.mem0.ai/platform/quickstart 

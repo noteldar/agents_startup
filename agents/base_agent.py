@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 from llama_api_client import LlamaAPIClient
 import os
 from dotenv import load_dotenv
+from memory import Mem0Memory
 
 # Ensure environment variables are loaded
 load_dotenv()
@@ -64,8 +65,13 @@ class BaseAgent:
             config: An AgentConfig object containing the agent's configuration
         """
         self.config = config
-        self.memory = None  # Will be initialized later with mem0
         self._setup_llm()
+
+        # Initialize memory system if enabled
+        if self.config.memory_enabled:
+            self._setup_memory()
+        else:
+            self.memory = None
 
         # Build the system prompt if not provided
         if not self.config.system_prompt:
@@ -82,6 +88,14 @@ class BaseAgent:
             raise ValueError("LLAMA_API_KEY environment variable is required")
 
         self.llm = LlamaAPIClient(api_key=api_key)
+
+    def _setup_memory(self):
+        """Set up the Mem0 memory system for the agent"""
+        # Use the agent's name as its unique identifier
+        self.memory = Mem0Memory(agent_id=self.config.name)
+
+        if self.config.verbose:
+            print(f"Memory system initialized for agent {self.config.name}")
 
     def _build_default_system_prompt(self) -> str:
         """
@@ -116,11 +130,26 @@ class BaseAgent:
         """
         self.current_task = task
 
-        # Format the message for the LLM
+        # If memory is enabled, retrieve relevant context from memory
+        context = ""
+        if self.memory and self.config.memory_enabled:
+            memories = self.memory.search(task)
+            if memories:
+                context = "\n\nRelevant information from your memory:\n"
+                for idx, memory in enumerate(memories):
+                    context += f"{idx+1}. {memory['text']}\n"
+
+        # Format the message for the LLM, including memory context if available
         messages = [
             {"role": "system", "content": self.config.system_prompt},
-            {"role": "user", "content": task},
         ]
+
+        # Add memory context if available
+        if context:
+            messages.append({"role": "system", "content": context})
+
+        # Add the task message
+        messages.append({"role": "user", "content": task})
 
         # Call the Llama model with correct parameters according to SDK
         response = self.llm.chat.completions.create(
@@ -136,37 +165,85 @@ class BaseAgent:
         # Record this interaction in history
         self.message_history.append({"task": task, "response": result})
 
-        # TODO: Store in memory once memory system is implemented
+        # Store in memory if memory system is enabled
+        if self.memory and self.config.memory_enabled:
+            interaction = [
+                {"role": "user", "content": task},
+                {"role": "assistant", "content": result},
+            ]
+            self.memory.add(
+                content=interaction,
+                categories=["interaction"],
+                metadata={"task_type": "general"},
+            )
+            if self.config.verbose:
+                print(f"Stored interaction in memory")
 
         return result
 
-    def add_to_memory(self, content: str, metadata: Dict[str, Any] = None) -> bool:
+    def add_to_memory(
+        self,
+        content: str,
+        categories: List[str] = None,
+        metadata: Dict[str, Any] = None,
+    ) -> bool:
         """
         Add content to the agent's memory.
-        Will be fully implemented when the memory system is integrated.
 
         Args:
             content: The content to remember
+            categories: Optional categories to tag the memory with
             metadata: Additional metadata for the memory
 
         Returns:
             Success indicator
         """
-        # Placeholder until memory system is implemented
-        print(f"Agent {self.config.name} would remember: {content[:50]}...")
-        return True
+        if not self.memory or not self.config.memory_enabled:
+            if self.config.verbose:
+                print(
+                    f"Memory disabled for agent {self.config.name}, cannot add: {content[:50]}..."
+                )
+            return False
 
-    def retrieve_from_memory(self, query: str, limit: int = 5) -> List[Dict[str, Any]]:
+        try:
+            self.memory.add(content, categories=categories, metadata=metadata)
+            if self.config.verbose:
+                print(f"Agent {self.config.name} remembered: {content[:50]}...")
+            return True
+        except Exception as e:
+            if self.config.verbose:
+                print(f"Error adding to memory: {str(e)}")
+            return False
+
+    def retrieve_from_memory(
+        self, query: str, categories: List[str] = None, limit: int = 5
+    ) -> List[Dict[str, Any]]:
         """
         Retrieve information from the agent's memory.
-        Will be fully implemented when the memory system is integrated.
 
         Args:
             query: The query to search for in memory
+            categories: Optional categories to filter by
             limit: Maximum number of results to return
 
         Returns:
             List of memory entries matching the query
         """
-        # Placeholder until memory system is implemented
-        return []
+        if not self.memory or not self.config.memory_enabled:
+            if self.config.verbose:
+                print(f"Memory disabled for agent {self.config.name}, cannot retrieve")
+            return []
+
+        try:
+            results = self.memory.search(
+                query=query, categories=categories, limit=limit
+            )
+
+            if self.config.verbose:
+                print(f"Retrieved {len(results)} memories for query: {query[:50]}...")
+
+            return results
+        except Exception as e:
+            if self.config.verbose:
+                print(f"Error retrieving from memory: {str(e)}")
+            return []
